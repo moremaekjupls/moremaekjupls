@@ -1,0 +1,24 @@
+---
+import { useTranslations, localizeUrl, type Lang } from '../../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+interface Props { lang: Lang; entry: CollectionEntry<'blog'>; }
+const { lang, entry } = Astro.props;
+const t = useTranslations(lang);
+const { Content } = await entry.render();
+const fmt = new Intl.DateTimeFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(entry.data.pubDate);
+---
+<article class="section">
+  <div class="container">
+    <div class="article">
+      <a class="link-arrow" href={localizeUrl('/blog', lang)} style="margin-bottom:24px;">{t('cta.backToBlog')}</a>
+      <p class="article-meta" style="margin-top:24px;">{fmt}</p>
+      <h1 style="margin-bottom:30px;">{entry.data.title}</h1>
+      <div class="prose">
+        <Content />
+      </div>
+      <div style="margin-top:48px;border-top:1px solid var(--hairline);padding-top:24px;">
+        <a class="link-arrow" href={localizeUrl('/blog', lang)}>{t('cta.allPosts')} →</a>
+      </div>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,60 @@
+---
+import { useTranslations, localizeUrl, altLangUrl, stripBase, type Lang } from '../i18n/ui';
+interface Props { lang: Lang; path: string; }
+const { lang, path } = Astro.props;
+const t = useTranslations(lang);
+const L = (p: string) => localizeUrl(p, lang);
+
+const homeHref = L('/');
+const links = [
+  { href: L('/project'), label: t('nav.project'), match: '/project' },
+  { href: L('/blog'), label: t('nav.blog'), match: '/blog' },
+  { href: L('/about'), label: t('nav.about'), match: '/about' },
+];
+// strip base + /en prefix for matching
+const noBase = stripBase(path);
+const rel = noBase.startsWith('/en') ? (noBase.slice(3) || '/') : noBase;
+const isActive = (m: string) => rel === m || rel.startsWith(m + '/');
+
+const ruUrl = altLangUrl(path, 'ru');
+const enUrl = altLangUrl(path, 'en');
+---
+<header class="site-header">
+  <div class="container nav">
+    <a class="logo" href={homeHref} aria-label="Khondamir Begmatov — home">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path d="M11 1.5 20.5 7v8L11 20.5 1.5 15V7L11 1.5Z" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M1.8 7 11 12l9.2-5M11 12v8.3" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+      <span>Khondamir<span style="color:var(--color-smoke)"> Begmatov</span></span>
+    </a>
+
+    <nav class="nav-right">
+      <ul class="nav-links" id="navLinks">
+        {links.map((l) => (
+          <li><a href={l.href} aria-current={isActive(l.match) ? 'page' : undefined}>{l.label}</a></li>
+        ))}
+      </ul>
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <a href={ruUrl} aria-current={lang === 'ru' ? 'true' : 'false'} hreflang="ru">RU</a>
+        <a href={enUrl} aria-current={lang === 'en' ? 'true' : 'false'} hreflang="en">EN</a>
+      </div>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="navLinks">{t('nav.menu')}</button>
+    </nav>
+  </div>
+</header>
+
+<script>
+  function bindMenu() {
+    const btn = document.getElementById('menuBtn');
+    const links = document.getElementById('navLinks');
+    if (!btn || !links || (btn as any)._b) return;
+    (btn as any)._b = true;
+    btn.addEventListener('click', () => {
+      const open = links.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  }
+  bindMenu();
+  document.addEventListener('astro:page-load', bindMenu);
+</script>

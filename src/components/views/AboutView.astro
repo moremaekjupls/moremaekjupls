@@ -1,0 +1,35 @@
+---
+import Particles from '../Particles.astro';
+import { useTranslations, localizeUrl, type Lang } from '../../i18n/ui';
+import ContactForm from '../ContactForm.astro';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const L = (p: string) => localizeUrl(p, lang);
+const titleLines = (t('about.title') as string).split('\n');
+const body = t('about.body') as string[];
+---
+<section class="hero" style="min-height:clamp(380px,52vh,500px);">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">{t('about.eyebrow')}</span>
+      <h1 class="display">{titleLines.map((l, i) => (<>{l}{i < titleLines.length - 1 && <br />}</>))}</h1>
+    </div>
+    <div class="hero-visual"><Particles variant="brain" density={1} /></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="article" style="margin-left:0;">
+      <div class="prose">
+        {body.map((p) => (<p>{p}</p>))}
+      </div>
+      <div class="hero-cta" style="margin-top:36px;">
+        <a class="btn btn-primary" href={L('/project')}>{t('cta.viewProject')}</a>
+        <a class="btn btn-ghost" href={L('/blog')}>{t('cta.readBlog')}</a>
+      </div>
+      <ContactForm lang={lang} />
+    </div>
+  </div>
+</section>

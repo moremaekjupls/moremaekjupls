@@ -4,7 +4,7 @@ excerpt: "Anthropic abruptly restricted its top models after a US export directi
 pubDate: 2026-06-23
 lang: "en"
 transId: "platform-risk"
-draft: true
+draft: false
 ---
 
 ## What happened

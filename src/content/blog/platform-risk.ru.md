@@ -4,7 +4,7 @@ excerpt: "Anthropic экстренно ограничила топ-модели 
 pubDate: 2026-06-23
 lang: "ru"
 transId: "platform-risk"
-draft: true
+draft: false
 ---
 
 ## Что произошло

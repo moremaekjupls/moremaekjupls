@@ -184,27 +184,29 @@ const { variant = 'sphere', letter = 'N', density = 1, class: className = '' } =
   function buildGalaxy(n: number) {
     const CORE = ['#ffffff', '#ffe4aa', '#ffb829'];
     const ARM = ['#8052ff', '#8052ff', '#ffffff', '#bdbdbd', '#15846e'];
-    const arms = 2, wind = 3.6;
+    const arms = 3, wind = 2.5;
     const pts: any[] = [];
     for (let i = 0; i < n; i++) {
-      let x: number, y: number, z: number, core = false, rc: number;
-      if (Math.random() < 0.20) {
-        const rr = Math.abs(gauss()) * 0.14;
-        const th = Math.random() * 6.283, ph = Math.random() * 6.283;
+      let x: number, y: number, z: number, rc: number, kind: string;
+      const u = Math.random();
+      if (u < 0.24) {
+        const rr = Math.abs(gauss()) * 0.12, th = Math.random() * 6.283, ph = Math.random() * 6.283;
         x = rr * Math.cos(th) * Math.cos(ph); z = rr * Math.sin(th) * Math.cos(ph); y = rr * Math.sin(ph) * 0.6;
-        core = true; rc = rr;
+        rc = rr; kind = 'core';
+      } else if (u < 0.7) {
+        const r = Math.pow(Math.random(), 1.1), arm = (Math.random() * arms) | 0;
+        const ang = arm * (Math.PI * 2 / arms) + r * wind + gauss() * (0.10 + 0.30 * (1 - r));
+        x = r * Math.cos(ang); z = r * Math.sin(ang); y = gauss() * (0.015 + 0.04 * (1 - r)); rc = r; kind = 'arm';
       } else {
-        const r = Math.pow(Math.random(), 1.4);
-        const arm = (Math.random() * arms) | 0;
-        const ang = arm * (Math.PI * 2 / arms) + r * wind + gauss() * (0.18 + 0.5 * (1 - r));
-        x = r * Math.cos(ang); z = r * Math.sin(ang); y = gauss() * (0.02 + 0.05 * (1 - r)); rc = r;
+        const r = Math.sqrt(Math.random()), ang = Math.random() * 6.283;
+        x = r * Math.cos(ang); z = r * Math.sin(ang); y = gauss() * (0.02 + 0.05 * (1 - r)); rc = r; kind = 'disk';
       }
       const sa = Math.random() * Math.PI * 2;
-      const inner = rc < 0.16;
+      const inner = rc < 0.18;
       pts.push({
-        x, y, z, core, rc, sax: Math.cos(sa), say: Math.sin(sa),
-        size: core ? rand(2.0, 4.2) : rand(1.6, 4.2),
-        color: (core || inner ? CORE : ARM)[(Math.random() * (core || inner ? 3 : 5)) | 0],
+        x, y, z, kind, rc, sax: Math.cos(sa), say: Math.sin(sa),
+        size: kind === 'disk' ? rand(1.8, 4.0) : rand(2.4, 5.6),
+        color: ((kind === 'core' || inner) ? CORE : ARM)[(Math.random() * ((kind === 'core' || inner) ? 3 : 5)) | 0],
         ang: Math.random() * 6.28, spin: rand(-0.0006, 0.0006), fill: Math.random() < 0.2,
         tw: rand(0.6, 1), ph: Math.random() * 6.28,
       });
@@ -247,8 +249,8 @@ const { variant = 'sphere', letter = 'N', density = 1, class: className = '' } =
         radius = Math.min(w, narrow ? h * 0.9 : h * 1.02) * (narrow ? 0.36 : 0.42);
         pts = buildEarth(Math.round(clamp(area / 430 * density, 700, 2400)));
       } else if (mode === 'galaxy') {
-        radius = Math.min(w, narrow ? h * 0.9 : h * 1.02) * (narrow ? 0.4 : 0.46);
-        pts = buildGalaxy(Math.round(clamp(area / 360 * density, 1200, 3200)));
+        radius = Math.min(w, narrow ? h * 0.9 : h * 1.02) * (narrow ? 0.34 : 0.32);
+        pts = buildGalaxy(Math.round(clamp(area / 340 * density, 1300, 3400)));
       } else {
         radius = Math.min(w, narrow ? h * 0.9 : h * 1.02) * (narrow ? 0.36 : 0.42);
         pts = buildSphere(Math.round(clamp(area / 560 * density, 420, 1800)));
@@ -316,8 +318,9 @@ const { variant = 'sphere', letter = 'N', density = 1, class: className = '' } =
         const dep = (zz + 1) / 2;
         const tw = animate ? 0.6 + 0.4 * Math.sin(t * 0.001 + p.ph) : 1;
         let s: number, a: number;
-        if (p.core) { s = p.size * (0.6 + dep * 0.6); a = (0.45 + dep * 0.55) * p.tw * tw * fade; }
-        else { s = p.size * (0.5 + dep * 0.7); a = (0.14 + dep * 0.66) * p.tw * tw * fade * (0.5 + 0.5 * (1 - p.rc)); }
+        if (p.kind === 'core') { s = p.size * (0.6 + dep * 0.55); a = (0.45 + dep * 0.55) * p.tw * tw * fade; }
+        else if (p.kind === 'arm') { s = p.size * (0.5 + dep * 0.7); a = (0.3 + dep * 0.6) * p.tw * tw * fade * (0.55 + 0.45 * (1 - p.rc)); }
+        else { s = p.size * (0.5 + dep * 0.6); a = (0.12 + dep * 0.45) * p.tw * tw * fade; }
         ctx!.globalAlpha = clamp(a, 0, 1);
         ctx!.strokeStyle = p.color; ctx!.fillStyle = p.color;
         if (animate) p.ang += p.spin * 16;

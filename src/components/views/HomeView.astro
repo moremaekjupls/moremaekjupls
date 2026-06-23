@@ -22,10 +22,6 @@ const stats = t('project.stats') as { num: string; label: string }[];
     <div class="hero-copy">
       <h1 class="hero-title">{titleLines.map((l, i) => (<>{l}{i < titleLines.length - 1 && <br />}</>))}</h1>
       <p class="hero-sub">{t('hero.sub')}</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href={L('/project')}>{t('cta.viewProject')}</a>
-        <a class="btn btn-ghost" href={L('/blog')}>{t('cta.readBlog')}</a>
-      </div>
     </div>
     <div class="hero-visual" aria-hidden="true"></div>
   </div>

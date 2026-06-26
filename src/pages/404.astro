@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import Particles from '../components/Particles.astro';
+---
+<Base lang="ru" title="404" description="Страница не найдена · Page not found">
+  <section class="hero" style="min-height:72vh;">
+    <div class="hero-bg"><Particles variant="sphere" density={1} /></div>
+    <div class="container" style="text-align:center;position:relative;z-index:2;">
+      <span class="eyebrow">404</span>
+      <h1 class="display">Потерялся<br />в космосе.</h1>
+      <p class="body body--muted" style="margin:24px auto 30px;">
+        Такой страницы нет. · This page drifted off into the void.
+      </p>
+      <a class="btn btn-primary" href="/">На главную · Back home</a>
+    </div>
+  </section>
+</Base>
